@@ -1,0 +1,54 @@
+{% extends 'billing/base.html' %}
+
+{% block content %}
+<section class="form-layout single-column">
+    <article class="glass-panel panel-card form-card">
+        <div class="section-title">
+            <div>
+                <p class="eyebrow">Product form</p>
+                <h3>{{ page_title }}</h3>
+            </div>
+            <a href="{% url 'billing:categories' %}" class="btn btn-light">Manage Categories</a>
+        </div>
+
+        <form method="post" class="styled-form">
+            {% csrf_token %}
+            <div class="form-grid two-columns">
+                <div class="form-group">
+                    <label for="name">Product / Service Name</label>
+                    <input type="text" id="name" name="name" value="{{ product.name }}" placeholder="Enter product or service name" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    {% if categories %}
+                        <select id="category" name="category" required>
+                            <option value="">Choose category</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {% if product.category == category.id|stringformat:'s' or product.category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <div class="empty-state compact">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <h4>No categories available</h4>
+                            <p>Please create a category first.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="number" id="price" name="price" value="{{ product.price }}" min="0" step="0.01" placeholder="Enter price" required>
+                </div>
+                <div class="form-group full-width">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="5" placeholder="Enter product description">{{ product.description }}</textarea>
+                </div>
+            </div>
+            <div class="form-actions">
+                <a href="{% url 'billing:products' %}" class="btn btn-light">Cancel</a>
+                <button type="submit" class="btn btn-primary" {% if not categories %}disabled{% endif %}>{{ button_label }}</button>
+            </div>
+        </form>
+    </article>
+</section>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'billing/base.html' %}
+
+{% block content %}
+<section class="glass-panel panel-card">
+    <div class="section-title responsive-row">
+        <div>
+            <p class="eyebrow">Product management</p>
+            <h3>Products & Services</h3>
+        </div>
+        <div class="topbar-actions">
+            <a href="{% url 'billing:categories' %}" class="btn btn-light">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Manage Categories</span>
+            </a>
+            <a href="{% url 'billing:add_product' %}" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i>
+                <span>Add Product</span>
+            </a>
+        </div>
+    </div>
+
+    <form method="get" class="toolbar-grid split-toolbar">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" name="q" value="{{ query }}" placeholder="Search by name, category or description">
+        </div>
+        <select name="category" class="filter-select">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+                <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:'s' %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-light">Apply</button>
+    </form>
+
+    {% if products %}
+        <div class="product-grid">
+            {% for product in products %}
+                <article class="product-card glass-soft">
+                    <div class="product-card-head">
+                        <div>
+                            <h4>{{ product.name }}</h4>
+                            <span class="badge">{{ product.category.name }}</span>
+                        </div>
+                        <strong>₹{{ product.price }}</strong>
+                    </div>
+                    <p>{{ product.description|default:'No description added yet.' }}</p>
+                    <div class="action-buttons">
+                        <a href="{% url 'billing:edit_product' product.id %}" class="btn btn-sm btn-light">Edit</a>
+                        <form method="post" action="{% url 'billing:delete_product' product.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this product?')">Delete</button>
+                        </form>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-box-open"></i>
+            <h4>No products found</h4>
+            <p>Add products or services to start billing.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

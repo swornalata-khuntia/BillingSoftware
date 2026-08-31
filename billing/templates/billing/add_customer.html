@@ -1,0 +1,40 @@
+{% extends 'billing/base.html' %}
+
+{% block content %}
+<section class="form-layout single-column">
+    <article class="glass-panel panel-card form-card">
+        <div class="section-title">
+            <div>
+                <p class="eyebrow">Customer form</p>
+                <h3>{{ page_title }}</h3>
+            </div>
+        </div>
+
+        <form method="post" class="styled-form">
+            {% csrf_token %}
+            <div class="form-grid two-columns">
+                <div class="form-group">
+                    <label for="name">Customer Name</label>
+                    <input type="text" id="name" name="name" value="{{ customer.name }}" placeholder="Enter customer name" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" id="phone" name="phone" value="{{ customer.phone }}" placeholder="Enter phone number" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" value="{{ customer.email }}" placeholder="Enter email address">
+                </div>
+                <div class="form-group full-width">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address" rows="5" placeholder="Enter full address" required>{{ customer.address }}</textarea>
+                </div>
+            </div>
+            <div class="form-actions">
+                <a href="{% url 'billing:customers' %}" class="btn btn-light">Cancel</a>
+                <button type="submit" class="btn btn-primary">{{ button_label }}</button>
+            </div>
+        </form>
+    </article>
+</section>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'billing/base.html' %}
+
+{% block content %}
+<section class="invoice-wrapper glass-panel panel-card">
+    <div class="invoice-header">
+        <div>
+            <p class="eyebrow">Professional invoice</p>
+            <h3>Bill Summary</h3>
+            <p class="muted-text">Bill Number: <strong>{{ bill.bill_number }}</strong></p>
+        </div>
+        <div class="invoice-actions">
+            <a href="{% url 'billing:create_bill' %}" class="btn btn-light">Create Another Bill</a>
+            <a href="{% url 'billing:download_invoice' bill.id %}" class="btn btn-light">Download Invoice</a>
+            <button class="btn btn-primary" onclick="window.print()">Print Invoice</button>
+        </div>
+    </div>
+
+    <div class="invoice-grid">
+        <article class="glass-soft info-card">
+            <h4>Customer Details</h4>
+            <p><strong>{{ bill.customer.name }}</strong></p>
+            <p>{{ bill.customer.phone }}</p>
+            <p>{{ bill.customer.email|default:'No email provided' }}</p>
+            <p>{{ bill.customer.address }}</p>
+        </article>
+        <article class="glass-soft info-card">
+            <h4>Invoice Details</h4>
+            <p><strong>Date:</strong> {{ bill.date|date:"d M Y, h:i A" }}</p>
+            <p><strong>Category:</strong> {{ bill.category.name }}</p>
+            <p><strong>Tax:</strong> {{ bill.tax_percentage }}%</p>
+            <p><strong>Items:</strong> {{ bill.total_items }}</p>
+        </article>
+    </div>
+
+    <div class="table-wrapper">
+        <table class="data-table invoice-table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.product.category.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>₹{{ item.price }}</td>
+                        <td>₹{{ item.line_total }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="invoice-footer">
+        <div class="invoice-note glass-soft">
+            <h4>Notes</h4>
+            <p>
+                This invoice is generated for academic and demo purposes. Tax values are included as a sample GST calculation.
+            </p>
+        </div>
+        <div class="totals-box glass-soft">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <strong>₹{{ bill.subtotal_amount }}</strong>
+            </div>
+            <div class="summary-row">
+                <span>Tax Amount</span>
+                <strong>₹{{ bill.tax_amount }}</strong>
+            </div>
+            <div class="summary-row total">
+                <span>Final Total</span>
+                <strong>₹{{ bill.total_amount }}</strong>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

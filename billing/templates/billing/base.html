@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title|default:"Billing Software" }} | Billing Software System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="{% static 'billing/css/style.css' %}">
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar glass-panel">
+            <div>
+                <a href="{% url 'billing:dashboard' %}" class="brand">
+                    <span class="brand-icon"><i class="fa-solid fa-file-invoice-dollar"></i></span>
+                    <div>
+                        <h1>Billing Software</h1>
+                        <p>Student Demo System</p>
+                    </div>
+                </a>
+
+                <nav class="sidebar-nav">
+                    <a href="{% url 'billing:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        <i class="fa-solid fa-chart-pie"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{% url 'billing:categories' %}" class="nav-link {% if 'categor' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>Categories</span>
+                    </a>
+                    <a href="{% url 'billing:customers' %}" class="nav-link {% if 'customer' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Customers</span>
+                    </a>
+                    <a href="{% url 'billing:products' %}" class="nav-link {% if 'product' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fa-solid fa-box-open"></i>
+                        <span>Products</span>
+                    </a>
+                    <a href="{% url 'billing:create_bill' %}" class="nav-link {% if request.resolver_match.url_name == 'create_bill' %}active{% endif %}">
+                        <i class="fa-solid fa-receipt"></i>
+                        <span>Create Bill</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- <div class="sidebar-footer glass-soft">
+                <p>Billing categories</p>
+                <div class="category-pills">
+                    {% for category in sidebar_categories %}
+                        <span>{{ category.name }}</span>
+                    {% empty %}
+                        <span>Add categories</span>
+                    {% endfor %}
+                </div>
+            </div> -->
+        </aside>
+
+        <div class="main-wrapper">
+            <header class="topbar glass-panel">
+                <div>
+                    <p class="eyebrow">Academic Demo</p>
+                    <h2>{{ page_title|default:"Billing Dashboard" }}</h2>
+                </div>
+                <div class="topbar-actions">
+                    <a href="{% url 'billing:categories' %}" class="btn btn-light">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>Manage Categories</span>
+                    </a>
+                    <a href="{% url 'billing:add_customer' %}" class="btn btn-light">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Add Customer</span>
+                    </a>
+                    <a href="{% url 'billing:add_product' %}" class="btn btn-primary">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Product</span>
+                    </a>
+                </div>
+            </header>
+
+            {% if messages %}
+                <section class="messages-stack">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }} glass-panel">
+                            <i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% elif message.tags == 'error' %}fa-circle-exclamation{% else %}fa-bell{% endif %}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+
+            <main class="page-content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,128 @@
+{% extends 'billing/base.html' %}
+
+{% block content %}
+<section class="hero-banner glass-panel">
+    <div>
+        <p class="eyebrow">Welcome back</p>
+        <h3>Billing Software System Dashboard</h3>
+        <p class="hero-text">
+            Manage customers, products, and invoices from one clean and modern dashboard.
+        </p>
+    </div>
+    <a href="{% url 'billing:create_bill' %}" class="btn btn-primary btn-lg">
+        <i class="fa-solid fa-file-circle-plus"></i>
+        <span>Create New Bill</span>
+    </a>
+</section>
+
+<section class="stats-grid">
+    <article class="stat-card gradient-blue">
+        <div>
+            <p>Total Categories</p>
+            <h3>{{ total_categories }}</h3>
+        </div>
+        <span class="stat-icon"><i class="fa-solid fa-layer-group"></i></span>
+    </article>
+    <article class="stat-card gradient-blue">
+        <div>
+            <p>Total Customers</p>
+            <h3>{{ total_customers }}</h3>
+        </div>
+        <span class="stat-icon"><i class="fa-solid fa-users"></i></span>
+    </article>
+    <article class="stat-card gradient-purple">
+        <div>
+            <p>Total Products</p>
+            <h3>{{ total_products }}</h3>
+        </div>
+        <span class="stat-icon"><i class="fa-solid fa-boxes-stacked"></i></span>
+    </article>
+    <article class="stat-card gradient-pink">
+        <div>
+            <p>Total Bills</p>
+            <h3>{{ total_bills }}</h3>
+        </div>
+        <span class="stat-icon"><i class="fa-solid fa-file-invoice"></i></span>
+    </article>
+    <article class="stat-card gradient-green">
+        <div>
+            <p>Total Revenue</p>
+            <h3>₹{{ total_revenue }}</h3>
+        </div>
+        <span class="stat-icon"><i class="fa-solid fa-sack-dollar"></i></span>
+    </article>
+</section>
+
+<section class="content-grid two-columns">
+    <article class="glass-panel panel-card">
+        <div class="section-title">
+            <div>
+                <p class="eyebrow">Quick access</p>
+                <h3>Workflow</h3>
+            </div>
+        </div>
+        <div class="workflow-list">
+            <div class="workflow-item">
+                <span>1</span>
+                <div>
+                    <h4>Add Products</h4>
+                    <p>Create products and services with categories and pricing.</p>
+                </div>
+            </div>
+            <div class="workflow-item">
+                <span>2</span>
+                <div>
+                    <h4>Add Customers</h4>
+                    <p>Store customer contact details for easy billing.</p>
+                </div>
+            </div>
+            <div class="workflow-item">
+                <span>3</span>
+                <div>
+                    <h4>Create Bill</h4>
+                    <p>Select customer, enter quantity, and calculate tax instantly.</p>
+                </div>
+            </div>
+            <div class="workflow-item">
+                <span>4</span>
+                <div>
+                    <h4>View Summary</h4>
+                    <p>Show a professional invoice layout with print support.</p>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <article class="glass-panel panel-card">
+        <div class="section-title">
+            <div>
+                <p class="eyebrow">Recent activity</p>
+                <h3>Latest Bills</h3>
+            </div>
+        </div>
+
+        {% if recent_bills %}
+            <div class="simple-list">
+                {% for bill in recent_bills %}
+                    <a href="{% url 'billing:bill_summary' bill.id %}" class="simple-list-item">
+                        <div>
+                            <h4>{{ bill.bill_number }}</h4>
+                            <p>{{ bill.customer.name }} · {{ bill.category.name }}</p>
+                        </div>
+                        <div class="list-item-right">
+                            <strong>₹{{ bill.total_amount }}</strong>
+                            <span>{{ bill.date|date:"d M Y, h:i A" }}</span>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state compact">
+                <i class="fa-solid fa-receipt"></i>
+                <h4>No bills created yet</h4>
+                <p>Create your first invoice to see activity here.</p>
+            </div>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}

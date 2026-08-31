@@ -1,0 +1,155 @@
+{% extends 'billing/base.html' %}
+{% load billing_extras %}
+
+{% block content %}
+<form method="post" class="content-grid bill-layout" id="bill-form">
+    {% csrf_token %}
+
+    <section class="glass-panel panel-card">
+        <div class="section-title">
+            <div>
+                <p class="eyebrow">Invoice builder</p>
+                <h3>Create Bill</h3>
+            </div>
+            <a href="{% url 'billing:categories' %}" class="btn btn-light">Manage Categories</a>
+        </div>
+
+        <div class="form-grid three-columns compact-gap">
+            <div class="form-group">
+                <label for="customer">Select Customer</label>
+                <select id="customer" name="customer" required>
+                    <option value="">Choose customer</option>
+                    {% for customer in customers %}
+                        <option value="{{ customer.id }}" {% if selected_customer == customer.id|stringformat:'s' %}selected{% endif %}>{{ customer.name }} - {{ customer.phone }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="category">Billing Category</label>
+                <select id="category" name="category" required>
+                    <option value="">Choose category</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:'s' %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="tax_percentage">GST / Tax</label>
+                <select id="tax_percentage" name="tax_percentage">
+                    {% for tax in tax_choices %}
+                        <option value="{{ tax }}" {% if selected_tax == tax|stringformat:'s' %}selected{% endif %}>{{ tax }}%</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="table-wrapper bill-table-wrapper">
+            <table class="data-table bill-table">
+                <thead>
+                    <tr>
+                        <th>Product / Service</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        <tr>
+                            <td>
+                                <strong>{{ product.name }}</strong>
+                                <p class="table-note">{{ product.description|default:'No description available.' }}</p>
+                            </td>
+                            <td>{{ product.category.name }}</td>
+                            <td class="product-price" data-price="{{ product.price }}">₹{{ product.price }}</td>
+                            <td>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="1"
+                                    value="{{ selected_quantities|get_item:product.id }}"
+                                    name="quantity_{{ product.id }}"
+                                    class="quantity-input"
+                                    data-price="{{ product.price }}"
+                                >
+                            </td>
+                            <td class="line-total">₹0.00</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <aside class="glass-panel panel-card summary-card sticky-card">
+        <div class="section-title">
+            <div>
+                <p class="eyebrow">Live calculation</p>
+                <h3>Bill Summary</h3>
+            </div>
+        </div>
+
+        <div class="summary-rows">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <strong id="subtotal-display">₹0.00</strong>
+            </div>
+            <div class="summary-row">
+                <span>Tax Amount</span>
+                <strong id="tax-display">₹0.00</strong>
+            </div>
+            <div class="summary-row total">
+                <span>Final Total</span>
+                <strong id="final-display">₹0.00</strong>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            <span>Generate Bill</span>
+        </button>
+        <p class="muted-text">Only products with quantity greater than 0 will be included in the invoice.</p>
+    </aside>
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const quantityInputs = document.querySelectorAll('.quantity-input');
+        const taxSelect = document.getElementById('tax_percentage');
+        const subtotalDisplay = document.getElementById('subtotal-display');
+        const taxDisplay = document.getElementById('tax-display');
+        const finalDisplay = document.getElementById('final-display');
+
+        function updateTotals() {
+            let subtotal = 0;
+
+            quantityInputs.forEach(function (input) {
+                const price = parseFloat(input.dataset.price || '0');
+                const quantity = parseInt(input.value || '0', 10);
+                const row = input.closest('tr');
+                const lineTotalCell = row.querySelector('.line-total');
+                const lineTotal = !Number.isNaN(quantity) && quantity > 0 ? price * quantity : 0;
+
+                subtotal += lineTotal;
+                lineTotalCell.textContent = `₹${lineTotal.toFixed(2)}`;
+            });
+
+            const taxPercentage = parseFloat(taxSelect.value || '0');
+            const taxAmount = subtotal * (taxPercentage / 100);
+            const finalTotal = subtotal + taxAmount;
+
+            subtotalDisplay.textContent = `₹${subtotal.toFixed(2)}`;
+            taxDisplay.textContent = `₹${taxAmount.toFixed(2)}`;
+            finalDisplay.textContent = `₹${finalTotal.toFixed(2)}`;
+        }
+
+        quantityInputs.forEach(function (input) {
+            input.addEventListener('input', updateTotals);
+        });
+
+        taxSelect.addEventListener('change', updateTotals);
+        updateTotals();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'billing/base.html' %}
+
+{% block content %}
+<section class="content-grid two-columns">
+    <article class="glass-panel panel-card form-card">
+        <div class="section-title responsive-row">
+            <div>
+                <p class="eyebrow">Dynamic category management</p>
+                <h3>{% if editing_category %}Edit Category{% else %}Add Category{% endif %}</h3>
+            </div>
+            {% if editing_category %}
+                <a href="{% url 'billing:categories' %}" class="btn btn-light">Cancel Edit</a>
+            {% endif %}
+        </div>
+
+        <form method="post" action="{% if editing_category %}{% url 'billing:edit_category' editing_category.id %}{% else %}{% url 'billing:add_category' %}{% endif %}" class="styled-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Category Name</label>
+                <input type="text" id="name" name="name" value="{% if editing_category %}{{ editing_category.name }}{% endif %}" placeholder="Enter category name" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{% if editing_category %}Update Category{% else %}Save Category{% endif %}</button>
+            </div>
+        </form>
+    </article>
+
+    <article class="glass-panel panel-card">
+        <div class="section-title responsive-row">
+            <div>
+                <p class="eyebrow">Available categories</p>
+                <h3>Categories</h3>
+            </div>
+        </div>
+
+        <form method="get" class="toolbar-grid">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="q" value="{{ query }}" placeholder="Search categories">
+            </div>
+            <button type="submit" class="btn btn-light">Search</button>
+        </form>
+
+        {% if categories %}
+            <div class="product-grid">
+                {% for category in categories %}
+                    <article class="product-card glass-soft">
+                        <div class="product-card-head">
+                            <div>
+                                <h4>{{ category.name }}</h4>
+                                <span class="badge">{{ category.total_products }} Products</span>
+                            </div>
+                            <strong>{{ category.total_bills }} Bills</strong>
+                        </div>
+                        <p>Use this category for products, services, and billing invoices.</p>
+                        <div class="action-buttons">
+                            <a href="{% url 'billing:categories' %}?edit={{ category.id }}" class="btn btn-sm btn-light">Edit</a>
+                            <form method="post" action="{% url 'billing:delete_category' category.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this category?')">Delete</button>
+                            </form>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-layer-group"></i>
+                <h4>No categories found</h4>
+                <p>Create your first category to use it in products and bills.</p>
+            </div>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}
