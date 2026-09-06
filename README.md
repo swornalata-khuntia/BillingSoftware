@@ -28,4 +28,7 @@ BillingSoftware/
 ├── db.sqlite3
 ├── manage.py
 └── README.md
+## Project Screenshot
+
+![Billing Software Dashboard](dashboard.png)
 
