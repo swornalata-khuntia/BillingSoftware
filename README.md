@@ -17,7 +17,6 @@ A web-based Billing Software developed using Django and Python.
 - HTML
 - CSS
 - SQLite
-
 ## Project Structure
 
 ```text
@@ -25,10 +24,13 @@ BillingSoftware/
 │
 ├── BillingSoftware/
 ├── billing/
-├── db.sqlite3
 ├── manage.py
-└── README.md
+├── README.md
+└── requirements.txt
+```
+
 ## Project Screenshot
 
 ![Billing Software Dashboard](dashboard.png)
+
 
