@@ -31,6 +31,6 @@ BillingSoftware/
 
 ## Project Screenshot
 
-![Billing Software Dashboard](dashboard.png)
+![Billing Software Dashboard](dashboard.png.png)
 
 
